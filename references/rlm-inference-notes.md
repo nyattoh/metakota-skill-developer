@@ -51,8 +51,13 @@
 ## 関連論文/記事（URL）
 | 論文/記事名 | URL | 備考 |
 | --- | --- | --- |
-| **Recursive Language Models** | https://arxiv.org/abs/2512.24601 | スレ主張のRLM（MIT側論文）。 |
-| **RLM PDF** | https://arxiv.org/pdf/2512.24601 | 同上のPDF版。 |
+| **Recursive Language Models** | https://arxiv.org/abs/2512.24601 | RLM（MIT側論文）。 |
 | **RETRO Blog** | https://deepmind.google/blog/improving-language-models-by-retrieving-from-trillions-of-tokens/ | DeepMindの検索拡張モデル。 |
 | **RAG（arXiv）** | https://arxiv.org/abs/2005.11401 | RAGの元論文。 |
 | **Recursive Transformer (DeepMind)** | https://deepmind.google/research/publications/122290/ | 別系研究。 |
+
+## 参考URL
+- https://arxiv.org/abs/2512.24601
+- https://arxiv.org/abs/2005.11401
+- https://deepmind.google/blog/improving-language-models-by-retrieving-from-trillions-of-tokens/
+- https://deepmind.google/research/publications/122290/

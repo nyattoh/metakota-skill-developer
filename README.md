@@ -1,7 +1,7 @@
 # metakota-skill-developer
 
 ## 概要
-Codexに限らず、**スキル設計やメタスキル運用**に使える汎用スキルです。SKILL.md を中心に、agents / references / scripts / assets を分離し、段階的ロードで再利用しやすいスキル構成を設計します。
+Claudeに限らず、**スキル設計やメタスキル運用**に使える汎用スキルです。SKILL.md を中心に、agents / references / scripts / assets を分離し、段階的ロードで再利用しやすいスキル構成を設計します。
 
 ## 特徴
 - スキル構成要素を明確に分離し、再利用性を高める。
@@ -93,8 +93,7 @@ metakota でスキル構成を設計して。SKILL.md と agents/references/scri
 ## 参照論文/記事
 | 論文/記事名 | URL | 備考 |
 | --- | --- | --- |
-| **Recursive Language Models** | https://arxiv.org/abs/2512.24601 | スレ主張のRLM（MIT側論文）。 |
-| **RLM PDF** | https://arxiv.org/pdf/2512.24601 | 同上のPDF版。 |
+| **Recursive Language Models** | https://arxiv.org/abs/2512.24601 | RLM（MIT側論文）。 |
 | **RETRO Blog** | https://deepmind.google/blog/improving-language-models-by-retrieving-from-trillions-of-tokens/ | DeepMindの検索拡張モデル。 |
 | **RAG（arXiv）** | https://arxiv.org/abs/2005.11401 | RAGの元論文。 |
 | **Recursive Transformer (DeepMind)** | https://deepmind.google/research/publications/122290/ | 別系研究。 |
