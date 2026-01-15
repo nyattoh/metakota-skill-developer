@@ -11,83 +11,246 @@ description: スキルを作成/更新し、SKILL.md・agents・references・scr
 - 使用後に改善できるフィードバックループを組み込む。
 - スキル連携/サブエージェント設計をスキルに組み込む。
 
-## 収集する情報
-- スキル名（kebab-case）と対象範囲
-- トリガー文（例: 「metakota でスキル設計」などの固有呼び出し）
-- 具体的なユーザー発話例（2-3件）
-- 期待する出力と品質基準
-- 対応環境（Codex / Claude / Gemini / API など）と移植性要件
-- 参照ソース（PDF / ノート / コード）と同梱したいリソース
-- スキル連携の対象・依存関係・ハンドオフ方法
-- 制約（トークン、ネットワーク、テスト、セキュリティ）
+## 原則
+- **分離**: 知識はreferences、仕様はSKILL.md/agents、機械作業はscripts、テンプレはassets
+- **段階的ロード**: 必要な情報だけを必要なタイミングで読む
+- **統一ハンドオフ**: スキル連携は統一的なプロトコルで行う
+- **最小トークン**: 実行に必要な情報だけを残し、知識はreferencesへ
 
-## 手順
-1. 具体的な使用例と成果物を確認する。
-2. タスク境界と入出力を決める。
-3. スキル連携の有無を決め、ハンドオフ仕様を定義する。
-4. 役割分担を決める: 知識は references、機械作業は scripts、テンプレは assets。
-5. スキル雛形を作る（init_skill.pyがあれば使用）。
-6. SKILL.md を書く。
-   - 「いつ使うか」は frontmatter の description に集約する。
-   - 本文は手順・判断基準のみを書く。
-7. references を作る。
-   - 1ファイル1トピックで分割する。
-   - どのタスクで読むかを明記する。
-8. scripts を作る。
-   - 反復・整形・検証など決定的処理を移す。
-9. フィードバックループを入れる。
-   - 失敗と改善点を記録し、次回に反映する。
-10. 検証とパッケージ化を行う（package_skill.pyがあれば使用）。
+---
 
-## リソース設計ルール
-- SKILL.md はワークフローのハブにする。
-- agents は「仕様」だけを書く（知識は書かない）。
-- references は知識の棚として使う。
-- scripts は機械作業の外出しに使う。
-- 段階的ロードを前提に、重い情報は分散する。
-- 長文は検索→抽出→検証→統合の再帰タスクで読む。
+## ワークフロー（5フェーズ）
+
+### Phase 1: Discovery（要件抽出）
+**いつ実行**: ユーザーからスキル作成依頼があった場合
+
+**収集する情報**:
+| 項目 | 内容 |
+|------|------|
+| スキル名 | kebab-case、対象範囲 |
+| トリガー文 | 2-5件（固有で分かりやすい言葉） |
+| ユーザー発話例 | 2-3件（実際の使い方） |
+| 成果物 | 期待する出力、品質基準 |
+| 対応環境 | Codex/Claude/Gemini/API、移植性要件 |
+| 参照ソース | PDF/ノート/コード、同梱リソース |
+| 連携先 | 依存関係、ハンドオフ方法 |
+| 制約 | トークン、ネットワーク、テスト、セキュリティ |
+
+**出力**: スキル名案、トリガー、ユーザー発話、成果物定義、連携有無
+
+**チェック項目**:
+- [ ] トリガー文が具体性を持っているか
+- [ ] ユーザー発話例が実際的か
+- [ ] 成果物定義が明確か
+- [ ] スキル連携の有無が判定できたか
+
+詳細: `agents/skill-discovery.md`
+
+---
+
+### Phase 2: Design（構造設計）
+**いつ実行**: Discovery完了後
+
+**設計項目**:
+- タスク境界と入出力の定義
+- 参照ファイル構成（何をreferences/に置くか）
+- scripts候補（何を自動化するか）
+- assets候補（どんなテンプレが必要か）
+- 連携仕様（他スキルへのハンドオフ方法）
+
+**設計原則**:
+- 1ファイル1トピック
+- 重い知識はreferencesへ
+- 決定的処理はscriptsへ
+- 再利用可能なパターンはassetsへ
+
+**出力**: タスクリスト、参照ファイル構成案、scripts/assets候補、連携仕様
+
+**チェック項目**:
+- [ ] タスク境界が明確か
+- [ ] 知識と仕様の分離が計画されているか
+- [ ] 必要なscriptsが特定されているか
+- [ ] 連携仕様が定義されているか
+
+詳細: `agents/skill-design.md`
+
+---
+
+### Phase 3: Implementation（実装）
+**いつ実行**: Design完了後
+
+**実装順序**:
+1. SKILL.mdの作成
+2. references/*.mdの作成
+3. scripts/*.pyの作成（必要なら）
+4. assets/*の作成（必要なら）
+
+**SKILL.mdの構造**:
+```yaml
+---
+name: skill-name
+description: いつ使うかを簡潔に記述
+---
+本文: 手順・判断基準のみ
+```
+
+**制約**:
+- frontmatterはnameとdescriptionのみ
+- 本文は手順と判断基準のみ、知識は書かない
+- referencesは1ファイル1トピック、読み込みタイミング明記
+
+**出力**: SKILL.md、references、scripts、assets
+
+**チェック項目**:
+- [ ] frontmatterが正しいか
+- [ ] SKILL.md本文が手順中心か
+- [ ] referencesが1ファイル1トピックか
+- [ ] 読み込みタイミングが明記されているか
+
+詳細: `agents/skill-implementation.md`
+
+---
+
+### Phase 4: Review（レビュー）
+**いつ実行**: Implementation完了後
+
+**レビュー観点**:
+| 観点 | 確認内容 |
+|------|----------|
+| 構造 | 仕様/知識/自動化の分離が正しいか |
+| トリガー | 明確で競合しないか |
+| 移植性 | 複数クライアント対応できているか |
+| トークン効率 | 冗長な記述がないか |
+| 連携 | スキル連携の手順が守られているか |
+| assets | 有無と用途が適切か |
+
+**出力**: 指摘事項（重要度順）、修正案、パッケージ化
+
+**チェック項目**:
+- [ ] 全てのレビュー観点をパスしたか
+- [ ] 指摘事項がすべて対応されたか
+
+詳細: `agents/skill-review.md`
+
+---
+
+### Phase 5: Feedback（改善）
+**いつ実行**: スキル使用後、改善が必要な場合
+
+**分類**:
+| 分類 | 内容 |
+|------|------|
+| トリガー | 誤起動、認識漏れ |
+| 参照 | 情報不足/過多 |
+| 自動化 | 手動作業の残存 |
+| 仕様 | 曖昧さ、手順の不足 |
+
+**改善原則**:
+- 追加トークンは最小
+- 重い知識はreferencesへ移動
+- 仕様の曖昧さがある場合は1回だけ質問
+
+**出力**: 指摘事項、修正案（差分）、次回検証用テスト手順
+
+詳細: `agents/skill-feedback-boss.md`
+
+---
+
+## スキル構成要素
+
+| ディレクトリ | 内容 | 原則 |
+|-------------|------|------|
+| SKILL.md | ワークフローのハブ | 手順・判断基準のみ、知識は書かない |
+| agents/ | 各フェーズの仕様 | 仕様だけを書く、知識はreferencesへ |
+| references/ | 知識の棚 | 1ファイル1トピック、どのタスクで読むか明記 |
+| scripts/ | 機械作業 | 反復・整形・検証などの決定的処理 |
+| assets/ | テンプレート | 雛形・フォーマット定義 |
+
+---
 
 ## スキル連携ルール
-- 呼び出しは `assets/skill-call-template.md` の形式で統一する。
-- 2段以上の連鎖呼び出しは避ける。
-- Claude Code では subagent frontmatter の `skills` でスキル連携できる（詳細は references/subagent-usage.md）。
+- 呼び出しは `assets/skill-call-template.md` の形式で統一する
+- 2段以上の連鎖呼び出しは避ける
+- Claude Code では subagent frontmatter の `skills` でスキル連携できる
+- 詳細: `references/skill-handoff.md`
+
+---
 
 ## 参照ファイル
-- references/context-engineering-notes.md（コンテキスト設計の要点）
-- references/skills-knowledge-core.md（低トークン運用とフィードバックループ）
-- references/task-spec-13-phases-template.md（13エージェント構成が必要な場合）
-- references/portability-guidelines.md（他クライアント対応）
-- references/rlm-inference-notes.md（長文の探索的読み取りと再帰実行）
-- references/long-context-retrieval-notes.md（RLM/RAG/RETRO/Recursive Transformer要点）
-- references/subagent-usage.md（サブエージェント/コマンド呼び出し）
-- references/skill-handoff.md（スキル連携の最小プロトコル）
-- references/deepmind-latest-usage-notes.md（DeepMind関連の最新活用メモ）
-- references/skill-components.md（スキル構成要素の概要）
+
+| ファイル | 内容 | 使用フェーズ |
+|----------|------|-------------|
+| references/context-engineering-notes.md | コンテキスト設計の要点 | Design, Implementation |
+| references/skills-knowledge-core.md | 低トークン運用とフィードバックループ | 全フェーズ |
+| references/task-spec-13-phases-template.md | 13エージェント構成テンプレ | Design |
+| references/portability-guidelines.md | 他クライアント対応 | Design, Review |
+| references/rlm-inference-notes.md | 長文の探索的読み取り | Discovery, Implementation |
+| references/long-context-retrieval-notes.md | RLM/RAG/RETRO要点 | Design |
+| references/subagent-usage.md | サブエージェント/コマンド呼び出し | Design |
+| references/skill-handoff.md | スキル連携の最小プロトコル | Design, Implementation |
+| references/deepmind-latest-usage-notes.md | DeepMind関連の最新活用メモ | Design |
+| references/skill-components.md | スキル構成要素の概要 | Discovery |
+| references/feedback-loop-checklist.md | フィードバック収集チェックリスト | Feedback |
+
+---
 
 ## agents
-- agents/skill-discovery.md（要件・トリガー抽出）
-- agents/skill-design.md（リソース分割・連携設計）
-- agents/skill-implementation.md（SKILL.md / resources 実装）
-- agents/skill-review.md（品質・移植性・連携のレビュー）
-- agents/skill-feedback-boss.md（フィードバック収集と最小修正）
+
+### スキル開発用（5フェーズ）
+
+| ファイル | 内容 |
+|----------|------|
+| agents/skill-discovery.md | Phase 1: 要件・トリガー抽出 |
+| agents/skill-design.md | Phase 2: リソース分割・連携設計 |
+| agents/skill-implementation.md | Phase 3: SKILL.md / resources 実装 |
+| agents/skill-review.md | Phase 4: 品質・移植性・連携のレビュー |
+| agents/skill-feedback-boss.md | Phase 5: フィードバック収集と最小修正 |
+
+### メタプロンプト用（Operator/Guardian分離型）
+
+| ファイル | 役割 | 内容 |
+|----------|------|------|
+| agents/meta-control.md | 協調制御 | Operator/Guardian の調整、One-Question Gate |
+| agents/meta-guardian.md | 制御系 | 安全・ポリシー・コスト監視、プリセット選択 |
+| agents/meta-operator.md | 実行系 | タスク実行、ツール利用、出力生成 |
+
+**メタプロンプト構成**:
+- Guardian が安全・コストを監視し、Operator に実行許可/制限を与える
+- Operator は Guardian の許可のもとでタスクを実行
+- 分離により役割が明確になり、コスト圧縮と保守性が向上
+
+---
 
 ## scripts
-- scripts/extract_pdf_text.py（PDF本文抽出）
-- scripts/rlm_extract_snippets.py（該当行と前後文脈抽出）
-- scripts/rlm_min_pipeline.py（検索→抽出→検証の最小パイプライン）
+
+| ファイル | 内容 |
+|----------|------|
+| scripts/extract_pdf_text.py | PDF本文抽出 |
+| scripts/rlm_extract_snippets.py | 該当行と前後文脈抽出 |
+| scripts/rlm_min_pipeline.py | 検索→抽出→検証の最小パイプライン |
+
+---
 
 ## assets
-- assets/skill-brief-template.md（スキル要件テンプレ）
-- assets/skill-task-spec-template.md（Task仕様テンプレ）
-- assets/feedback-log-template.md（改善ログテンプレ）
-- assets/rlm-task-spec-template.md（RLM用Task仕様テンプレ）
-- assets/skill-call-template.md（スキル連携テンプレ）
+
+| ファイル | 内容 |
+|----------|------|
+| assets/skill-brief-template.md | スキル要件テンプレ |
+| assets/skill-task-spec-template.md | Task仕様テンプレ |
+| assets/feedback-log-template.md | 改善ログテンプレ |
+| assets/rlm-task-spec-template.md | RLM用Task仕様テンプレ |
+| assets/skill-call-template.md | スキル連携テンプレ |
+
+---
 
 ## フィードバックループ
-- 使った直後に「成功点 / 失敗点 / トークン過多 / 迷い」を記録する。
-- agents/skill-feedback-boss.md で最小修正案をまとめる。
-- トリガー、references、scripts、workflow を更新する。
-- 新しい例で再テストする。
+1. 使った直後に「成功点 / 失敗点 / トークン過多 / 迷い」を記録
+2. `assets/feedback-log-template.md` を使用してログ化
+3. Phase 5（Feedback）で最小修正案をまとめる
+4. トリガー、references、scripts、workflow を更新
+5. 新しい例で再テスト
+
+---
 
 ## 出力
 - 完成したスキルディレクトリ一式

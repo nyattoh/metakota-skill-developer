@@ -105,5 +105,12 @@ metakota でスキル構成を設計して。SKILL.md と agents/references/scri
 - Claude Code Slash Commands: https://docs.claude.com/en/docs/claude-code/slash-commands
 - Claude Code SDK Slash Commands: https://docs.claude.com/en/docs/claude-code/sdk/sdk-slash-commands
 
+## 謝辞
+本スキルの開発にあたり、以下のリソースを参考にさせていただきました：
+
+- [meta-skill-creator](https://github.com/daishiman/meta-skill-creator) - リファクタリングの参考にさせていただきました
+- [hirokaji氏のnote](https://note.com/tasty_dunlin998) - プロンプト設計の参考にさせていただきました
+- [hima2b4氏のnote](https://note.com/hima2b4) - メタプロンプト構成の参考にさせていただきました
+
 ## ライセンス
 MIT
