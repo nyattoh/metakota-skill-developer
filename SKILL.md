@@ -1,19 +1,9 @@
 ---
 name: metakota-skill-developer
-description: スキルを作成/更新し、SKILL.md・agents・references・scripts・assetsを設計する。スキル連携や低トークン化の設計が必要なときにも使う。
+description: スキルを作成/更新し、SKILL.md・agents・references・scripts・assetsを設計する。スキル連携や低トークン化の設計が必要なとき、または「metakota」で始まる明示的な指示があるときに使う。
 ---
 
 # Metakota Skill Developer
-
-## When to Use
-- スキル作成/更新の要望が出たときに使う。
-- メタスキル設計やスキル構造の標準化が必要なときに使う。
-- スキル連携やサブエージェント設計が必要なときに使う。
-
-## How to Use
-- 目的とトリガーを収集し、SKILL.mdと各リソースを設計する。
-- references/scripts/assetsを分離し、段階的ロードで最小化する。
-- 長文は検索→抽出→検証→統合の再帰タスクで扱う。
 
 ## 目的
 - スキルを「長いプロンプト」ではなく「再利用可能な構成要素」として設計する。
@@ -23,7 +13,7 @@ description: スキルを作成/更新し、SKILL.md・agents・references・scr
 
 ## 収集する情報
 - スキル名（kebab-case）と対象範囲
-- トリガー文（例: 「スキル作りたい」「メタスキル」など）
+- トリガー文（例: 「metakota でスキル設計」などの固有呼び出し）
 - 具体的なユーザー発話例（2-3件）
 - 期待する出力と品質基準
 - 対応環境（Codex / Claude / Gemini / API など）と移植性要件
@@ -55,40 +45,47 @@ description: スキルを作成/更新し、SKILL.md・agents・references・scr
 - references は知識の棚として使う。
 - scripts は機械作業の外出しに使う。
 - 段階的ロードを前提に、重い情報は分散する。
-- 長文は外部環境に置き、検索→抽出→検証の再帰タスクで読む。
+- 長文は検索→抽出→検証→統合の再帰タスクで読む。
+
+## スキル連携ルール
+- 呼び出しは `assets/skill-call-template.md` の形式で統一する。
+- 2段以上の連鎖呼び出しは避ける。
+- Claude Code では subagent frontmatter の `skills` でスキル連携できる（詳細は references/subagent-usage.md）。
 
 ## 参照ファイル
-- references/context-engineering-notes.md を読む（コンテキスト設計の要点）。
-- references/skills-knowledge-core.md を読む（低トークン運用とフィードバックループ）。
-- references/task-spec-13-phases-template.md を読む（13エージェント構成が必要な場合）。
-- references/portability-guidelines.md を読む（他クライアント対応）。
-- references/rlm-inference-notes.md を読む（長文の探索的読み取りと再帰実行）。
-- references/long-context-retrieval-notes.md を読む（RLM/RAG/RETRO/Recursive Transformer要点）。
-- references/subagent-usage.md を読む（サブエージェント設計の差分）。
-- references/skill-handoff.md を読む（スキル連携の最小プロトコル）。
-- references/deepmind-latest-usage-notes.md を読む（DeepMind関連の最新活用メモ）。
-- references/skill-components.md を読む（スキル構成要素の概要）。
-
-## scripts
-- scripts/extract_pdf_text.py
-  - PDFの本文抽出に使う。
-- scripts/rlm_extract_snippets.py
-  - 長文から該当行と前後文脈を機械抽出する。
-- scripts/rlm_min_pipeline.py
-  - 検索→抽出→検証の最小パイプライン（JSON出力）。
+- references/context-engineering-notes.md（コンテキスト設計の要点）
+- references/skills-knowledge-core.md（低トークン運用とフィードバックループ）
+- references/task-spec-13-phases-template.md（13エージェント構成が必要な場合）
+- references/portability-guidelines.md（他クライアント対応）
+- references/rlm-inference-notes.md（長文の探索的読み取りと再帰実行）
+- references/long-context-retrieval-notes.md（RLM/RAG/RETRO/Recursive Transformer要点）
+- references/subagent-usage.md（サブエージェント/コマンド呼び出し）
+- references/skill-handoff.md（スキル連携の最小プロトコル）
+- references/deepmind-latest-usage-notes.md（DeepMind関連の最新活用メモ）
+- references/skill-components.md（スキル構成要素の概要）
 
 ## agents
+- agents/skill-discovery.md（要件・トリガー抽出）
+- agents/skill-design.md（リソース分割・連携設計）
+- agents/skill-implementation.md（SKILL.md / resources 実装）
+- agents/skill-review.md（品質・移植性・連携のレビュー）
 - agents/skill-feedback-boss.md（フィードバック収集と最小修正）
+
+## scripts
+- scripts/extract_pdf_text.py（PDF本文抽出）
+- scripts/rlm_extract_snippets.py（該当行と前後文脈抽出）
+- scripts/rlm_min_pipeline.py（検索→抽出→検証の最小パイプライン）
 
 ## assets
 - assets/skill-brief-template.md（スキル要件テンプレ）
 - assets/skill-task-spec-template.md（Task仕様テンプレ）
 - assets/feedback-log-template.md（改善ログテンプレ）
 - assets/rlm-task-spec-template.md（RLM用Task仕様テンプレ）
+- assets/skill-call-template.md（スキル連携テンプレ）
 
 ## フィードバックループ
 - 使った直後に「成功点 / 失敗点 / トークン過多 / 迷い」を記録する。
-- agents/skill-feedback-boss.md を使って最小修正案をまとめる。
+- agents/skill-feedback-boss.md で最小修正案をまとめる。
 - トリガー、references、scripts、workflow を更新する。
 - 新しい例で再テストする。
 

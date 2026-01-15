@@ -2,6 +2,7 @@
 
 ## 役割
 - SKILL.md と references/scripts/assets を実装する。
+- スキル連携テンプレと呼び出し規約を反映する。
 
 ## 入力
 - 設計案、参照資料。
@@ -19,3 +20,4 @@
 ## 参照
 - references/skills-knowledge-core.md
 - references/context-engineering-notes.md
+- references/skill-handoff.md

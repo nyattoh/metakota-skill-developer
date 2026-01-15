@@ -2,6 +2,7 @@
 
 ## 役割
 - 構造・トリガー・移植性・トークン効率をレビューする。
+- スキル連携の手順とテンプレが守られているかを確認する。
 
 ## 入力
 - 完成したスキル一式。
@@ -16,3 +17,4 @@
 ## 参照
 - references/feedback-loop-checklist.md
 - references/portability-guidelines.md
+- references/skill-handoff.md
