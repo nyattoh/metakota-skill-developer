@@ -7,6 +7,18 @@ Claudeに限らず、**スキル設計やメタスキル運用**に使える汎�
 - スキル構成要素を明確に分離し、再利用性を高める。
 - 参照情報を references に集約し、必要なときだけ読む設計。
 - scripts による抽出・整形・検証で作業を自動化。
+- Allocateフェーズで配分計画を明示し、迷いと反復を減らす。
+- Reviewで自動検証ゲートを通し、構造不備を早期検出する。
+- Feedbackでテンプレ更新を最小差分で反映する。
+- Fail-Closedゲートで「通らない限り止まる」運用を前提にする。
+
+## ワークフロー（6フェーズ）
+1. Discovery（要件抽出）
+2. Design（構造設計）
+3. Allocate（配分計画）
+4. Implementation（実装）
+5. Review（レビュー＋自動検証）
+6. Feedback（改善/学習）
 
 ## 動作要件
 - スキル読み込みに対応したクライアント（Codex / Gemini / Claude など）
@@ -50,6 +62,12 @@ metakota-skill-developer/
   references/
   scripts/
 ```
+
+### 付属テンプレ/スクリプト（抜粋）
+- `assets/allocation-plan-template.yaml`（Allocate用の配分計画テンプレ）
+- `scripts/validate_skill_structure.py`（Review用の構造検証）
+- `scripts/preflight.py`（事前チェック）
+- `scripts/validate_phase_output.py`（フェーズ成果物の検証）
 
 ## 使い方（トリガーと起動）
 ### 推奨トリガー
@@ -111,6 +129,7 @@ metakota でスキル構成を設計して。SKILL.md と agents/references/scri
 - [meta-skill-creator](https://github.com/daishiman/meta-skill-creator) - リファクタリングをさせていただきました
 - [hirokaji氏のnote](https://note.com/tasty_dunlin998) - プロンプト設計の参考にさせていただきました
 - [hima2b4氏のnote](https://note.com/hima2b4) - メタプロンプト構成の参考にさせていただきました
+- [ハヤシ シュンスケ氏のnote](https://note.ambitiousai.co.jp/n/nf73773c9bc69?sub_rt=share_pw) - 構造設計の参考にさせていただきました
 
 ## ライセンス
 MIT

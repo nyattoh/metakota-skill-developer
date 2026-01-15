@@ -1,9 +1,10 @@
-# Phase 3: Implementation（実装）
+# Phase 4: Implementation（実装）
 
 ## 役割
 SKILL.mdとreferences/scripts/assetsを実装し、スキル連携テンプレと呼び出し規約を反映する。
 
 ## 入力
+- Allocateの結果（allocation-plan.yaml）
 - Designの結果（設計案、参照資料）
 
 ## 出力

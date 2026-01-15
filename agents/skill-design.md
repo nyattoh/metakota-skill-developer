@@ -10,7 +10,7 @@
 ```yaml
 design_result:
   task_breakdown:
-    - phase: "Discovery|Design|Implementation|Review|Feedback"
+    - phase: "Discovery|Design|Allocate|Implementation|Review|Feedback"
       tasks: [...]
   references_structure:
     - file: "references/topic-name.md"

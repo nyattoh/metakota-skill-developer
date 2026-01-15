@@ -16,10 +16,19 @@ description: スキルを作成/更新し、SKILL.md・agents・references・scr
 - **段階的ロード**: 必要な情報だけを必要なタイミングで読む
 - **統一ハンドオフ**: スキル連携は統一的なプロトコルで行う
 - **最小トークン**: 実行に必要な情報だけを残し、知識はreferencesへ
+- **Fail-Closed**: 検証に失敗したら停止し、理由を書いて1つだけ質問する
 
 ---
 
-## ワークフロー（5フェーズ）
+## ガードレール（TDD的ゲート）
+- すべてのフェーズ開始前に `scripts/preflight.py` を実行する
+- Allocate完了後に `scripts/validate_phase_output.py --require allocation-plan.yaml` を実行する
+- Reviewで `scripts/validate_skill_structure.py` を実行する
+- いずれかがFAILなら**必ず停止**し、理由を短く書いて**1つだけ質問**する
+
+---
+
+## ワークフロー（6フェーズ）
 
 ### Phase 1: Discovery（要件抽出）
 **いつ実行**: ユーザーからスキル作成依頼があった場合
@@ -76,8 +85,29 @@ description: スキルを作成/更新し、SKILL.md・agents・references・scr
 
 ---
 
-### Phase 3: Implementation（実装）
+### Phase 3: Allocate（配分）
 **いつ実行**: Design完了後
+
+**目的**:
+- 実行順序と担当（エージェント/手作業/スクリプト）を明確化する
+- 迷いを減らし、LLM呼び出し回数を増やさない
+
+**出力**: allocation-plan.yaml（配分計画）
+
+**ゲート**:
+- `scripts/validate_phase_output.py --require allocation-plan.yaml`
+
+**チェック項目**:
+- [ ] 各フェーズの担当が明記されているか
+- [ ] 入出力と停止条件が明確か
+- [ ] 自動検証のゲートが設定されているか
+
+詳細: `agents/skill-allocate.md`
+
+---
+
+### Phase 4: Implementation（実装）
+**いつ実行**: Allocate完了後
 
 **実装順序**:
 1. SKILL.mdの作成
@@ -111,7 +141,7 @@ description: いつ使うかを簡潔に記述
 
 ---
 
-### Phase 4: Review（レビュー）
+### Phase 5: Review（レビュー）
 **いつ実行**: Implementation完了後
 
 **レビュー観点**:
@@ -124,17 +154,20 @@ description: いつ使うかを簡潔に記述
 | 連携 | スキル連携の手順が守られているか |
 | assets | 有無と用途が適切か |
 
+**自動検証**: `scripts/validate_skill_structure.py` を実行して構造検証を行う
+
 **出力**: 指摘事項（重要度順）、修正案、パッケージ化
 
 **チェック項目**:
 - [ ] 全てのレビュー観点をパスしたか
 - [ ] 指摘事項がすべて対応されたか
+ - [ ] 自動検証をパスしたか
 
 詳細: `agents/skill-review.md`
 
 ---
 
-### Phase 5: Feedback（改善）
+### Phase 6: Feedback（改善/学習）
 **いつ実行**: スキル使用後、改善が必要な場合
 
 **分類**:
@@ -149,8 +182,9 @@ description: いつ使うかを簡潔に記述
 - 追加トークンは最小
 - 重い知識はreferencesへ移動
 - 仕様の曖昧さがある場合は1回だけ質問
+- assetsテンプレとチェックリストを最小修正で更新する
 
-**出力**: 指摘事項、修正案（差分）、次回検証用テスト手順
+**出力**: 指摘事項、修正案（差分）、次回検証用テスト手順、テンプレ更新案
 
 詳細: `agents/skill-feedback-boss.md`
 
@@ -202,9 +236,10 @@ description: いつ使うかを簡潔に記述
 |----------|------|
 | agents/skill-discovery.md | Phase 1: 要件・トリガー抽出 |
 | agents/skill-design.md | Phase 2: リソース分割・連携設計 |
-| agents/skill-implementation.md | Phase 3: SKILL.md / resources 実装 |
-| agents/skill-review.md | Phase 4: 品質・移植性・連携のレビュー |
-| agents/skill-feedback-boss.md | Phase 5: フィードバック収集と最小修正 |
+| agents/skill-allocate.md | Phase 3: 配分計画の作成 |
+| agents/skill-implementation.md | Phase 4: SKILL.md / resources 実装 |
+| agents/skill-review.md | Phase 5: 品質・移植性・連携のレビュー |
+| agents/skill-feedback-boss.md | Phase 6: フィードバック収集と最小修正 |
 
 ### メタプロンプト用（Operator/Guardian分離型）
 
@@ -228,6 +263,9 @@ description: いつ使うかを簡潔に記述
 | scripts/extract_pdf_text.py | PDF本文抽出 |
 | scripts/rlm_extract_snippets.py | 該当行と前後文脈抽出 |
 | scripts/rlm_min_pipeline.py | 検索→抽出→検証の最小パイプライン |
+| scripts/validate_skill_structure.py | 最小構造の自動検証 |
+| scripts/preflight.py | 事前チェック（Fail-Closed） |
+| scripts/validate_phase_output.py | フェーズ成果物の検証 |
 
 ---
 
@@ -240,6 +278,7 @@ description: いつ使うかを簡潔に記述
 | assets/feedback-log-template.md | 改善ログテンプレ |
 | assets/rlm-task-spec-template.md | RLM用Task仕様テンプレ |
 | assets/skill-call-template.md | スキル連携テンプレ |
+| assets/allocation-plan-template.yaml | 配分計画テンプレ |
 
 ---
 
