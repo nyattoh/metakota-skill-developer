@@ -1,7 +1,7 @@
 # metakota-skill-developer
 
 ## 概要
-Claudeに限らず、**スキル設計やメタスキル運用**に使える汎用スキルです。SKILL.md を中心に、agents / references / scripts / assets を分離し、段階的ロードで再利用しやすいスキル構成を設計します。
+Codexに限らず、**スキル設計やメタスキル運用**に使える汎用スキルです。SKILL.md を中心に、agents / references / scripts / assets を分離し、段階的ロードで再利用しやすいスキル構成を設計します。
 
 ## 特徴
 - スキル構成要素を明確に分離し、再利用性を高める。
@@ -9,7 +9,7 @@ Claudeに限らず、**スキル設計やメタスキル運用**に使える汎�
 - scripts による抽出・整形・検証で作業を自動化。
 
 ## 動作要件
-- スキル読み込みに対応したクライアント（Codex / Gemini / Claude / Cursor など）
+- スキル読み込みに対応したクライアント（Codex / Gemini / Claude など）
 - Git（更新・履歴管理）
 - Python 3（`scripts/` を使う場合）
 
@@ -58,10 +58,32 @@ metakota-skill-developer/
 - `metakota-skill`
 - `metakota-skill-developer`
 
-### スラッシュコマンドが使える場合
-クライアントがスラッシュコマンドやエイリアス登録に対応しているなら、以下のように登録して起動します。
-- `/metakota`
-- `/metakota-skill`
+### スラッシュコマンド / エイリアス（クライアント別）
+クライアントが**カスタムコマンド**に対応している場合、`/metakota` のような短い呼び出しを作れます。
+以下は代表的な例です（詳細は各公式ドキュメント参照）。
+
+#### Gemini CLI
+- コマンド定義は `~/.gemini/commands/`（グローバル）か、`<project>/.gemini/commands/`（プロジェクト）
+- `.toml` で定義し、ファイル名が `/コマンド名` になる
+
+最小例（`~/.gemini/commands/metakota.toml`）:
+```toml
+prompt = "metakota でスキル構成を設計して。SKILL.md と agents/references/scripts/assets を分離して提案して。"
+```
+
+#### Claude Code
+- コマンド定義は `~/.claude/commands/`（個人）か、`<project>/.claude/commands/`（プロジェクト）
+- `.md` で定義し、ファイル名が `/コマンド名` になる
+
+最小例（`~/.claude/commands/metakota.md`）:
+```
+metakota でスキル構成を設計して。SKILL.md と agents/references/scripts/assets を分離して提案して。
+```
+
+### 本当に起動するかの確認方法
+1. チャット入力で `/` を打ち、`metakota` が一覧に出るか確認。
+2. 一覧から選ぶか `/metakota` を実行して反応を見る。
+3. 出てこない場合は、配置場所・ファイル名・拡張子を再確認。
 
 ### 通常の指示例（コマンド非対応の環境）
 - 「metakota を使ってスキル構成を設計して」
@@ -78,6 +100,11 @@ metakota-skill-developer/
 | **Recursive Transformer (DeepMind)** | https://deepmind.google/research/publications/122290/ | 別系研究。 |
 
 ※ 詳細なメモは `references/rlm-inference-notes.md` を参照。
+
+## 参考（コマンド定義の公式ドキュメント）
+- Gemini CLI Custom Commands: https://geminicli.com/docs/cli/custom-commands/
+- Claude Code Slash Commands: https://docs.claude.com/en/docs/claude-code/slash-commands
+- Claude Code SDK Slash Commands: https://docs.claude.com/en/docs/claude-code/sdk/sdk-slash-commands
 
 ## ライセンス
 MIT
