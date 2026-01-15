@@ -1,0 +1,48 @@
+version: 1
+steps:
+  - phase: "Discovery"
+    agent: "agents/skill-discovery.md"
+    inputs:
+      - "user request"
+    outputs:
+      - "discovery_result"
+    stop: "requirements defined"
+  - phase: "Design"
+    agent: "agents/skill-design.md"
+    inputs:
+      - "discovery_result"
+    outputs:
+      - "design_result"
+    stop: "structure planned"
+  - phase: "Allocate"
+    agent: "agents/skill-allocate.md"
+    inputs:
+      - "design_result"
+    outputs:
+      - "allocation_plan"
+    stop: "assignment fixed"
+  - phase: "Implementation"
+    agent: "agents/skill-implementation.md"
+    inputs:
+      - "allocation_plan"
+    outputs:
+      - "skill artifacts"
+    stop: "files generated"
+  - phase: "Review"
+    agent: "agents/skill-review.md"
+    inputs:
+      - "skill artifacts"
+    outputs:
+      - "review_result"
+    stop: "gate passed"
+  - phase: "Feedback"
+    agent: "agents/skill-feedback-boss.md"
+    inputs:
+      - "review_result"
+      - "feedback log"
+    outputs:
+      - "feedback_result"
+    stop: "minimum fix defined"
+review_gate:
+  script: "scripts/validate_skill_structure.py"
+  required: true
